@@ -6,7 +6,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // const openai = require('openai');
 
     // Set up the API key
-    const api_key = "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";
+    const api_key = "sk-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";
     const api_url = "https://api.openai.com/v1/engines/text-davinci-002/completions";
     // openai.api_key = api_key;
 
@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
     };
     
     // Function to generate response using GPT API
-    async function generate_response(prompt, tokens=150, temperature=0.5) {
+    function generate_response(prompt, tokens=150, temperature=0.5) {
         const data = {
             "prompt": prompt,
             "max_tokens": tokens,
@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", () => {
         };
 
         // HTTP POST request to GPT API
-        const response = await fetch(api_url, {
+        const response = fetch(api_url, {
             method: "POST",
             headers: headers,
             body: JSON.stringify(data)
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (response.status === 200) {
             // The prompt response
-            const message = (await response.json()).choices[0].text.trim();
+            const message = (response.json()).choices[0].text.trim();
             return message;
         } else {
             console.log(`Error: ${response.status} - ${response.statusText}`);
@@ -44,15 +44,17 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     function setup_game() {
-    // set the rules & setting for the game
-    const initial_game_prompt = "I want you to act as a text based adventure game. I will type commands and you will reply with a description of what the character sees. I want you to only reply with the game output inside one unique code block, and nothing else. do not write explanations. do not type commands unless I instruct you to do so. when i need to tell you something in english, i will do so by putting text inside curly brackets {like this}. my first command is wake up";
-    generate_response(initial_game_prompt).then((chatbot_response) => {
+        // set the rules & setting for the game
+        const initial_game_prompt = "I want you to act as a text based adventure game. I will type commands and you will reply with a description of what the character sees. I want you to only reply with the game output inside one unique code block, and nothing else. do not write explanations. do not type commands unless I instruct you to do so. when i need to tell you something in english, i will do so by putting text inside curly brackets {like this}. my first command is wake up";
+        
+        let chatbot_response = generate_response(initial_game_prompt)
+        
+        console.log(response)
         console.log(chatbot_response);
-    });
     }
 
-    async function generate_image(prompt) {
-        const response = await openai.createImage({
+    function generate_image(prompt) {
+        const response = openai.createImage({
             prompt: "a white siamese cat",
             n: 1,
             size: "1024x1024",
@@ -62,16 +64,18 @@ document.addEventListener("DOMContentLoaded", () => {
         console.log(image_url);
     };
 
+
     console.log("you're in a game (intro)");
     
     setup_game();
 
     while (true) {
-        const user_input = prompt("prompt: "); // TODO pick word
+        // const user_input = prompt("prompt: "); // TODO pick word
+        let user_input = document.getElementById('input')
 
-        if (user_input.toLowerCase() === 'quit') {
-            break;
-        };
+        // if (user_input.toLowerCase() === 'quit') {
+        //     break;
+        // };
 
         generate_response(user_input).then((chatbot_response) => {
             console.log(`narrator: ${chatbot_response}`);
